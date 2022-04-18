@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../Coinbase/vendor/autoload.php';
-require_once __DIR__ . '/../Coinbase/const.php';
+require_once __DIR__ . '/../PrivacyGate/vendor/autoload.php';
+require_once __DIR__ . '/../PrivacyGate/const.php';
 require_once __DIR__ . '/../../../init.php';
 require_once __DIR__ . '/../../../includes/gatewayfunctions.php';
 require_once __DIR__ . '/../../../includes/invoicefunctions.php';
@@ -38,7 +38,7 @@ class Webhook
     {
         // Die if module is not active.
         if (!$this->getModuleParam('type')) {
-            $this->failProcess('Coinbase Commerce module not activated');
+            $this->failProcess('PrivacyGate module not activated');
         }
     }
 
@@ -124,7 +124,7 @@ class Webhook
         $payload = trim(file_get_contents('php://input'));
 
         try {
-            $event = \CoinbaseCommerce\Webhook::buildEvent($payload, $signatureHeader, $secretKey);
+            $event = \PrivacyGate\Webhook::buildEvent($payload, $signatureHeader, $secretKey);
         } catch (\Exception $exception) {
             $this->failProcess($exception->getMessage());
         }
@@ -135,16 +135,16 @@ class Webhook
     private function getCharge($chargeId)
     {
         $apiKey = $this->getModuleParam('apiKey');
-        \CoinbaseCommerce\ApiClient::init($apiKey);
+        \PrivacyGate\ApiClient::init($apiKey);
 
         try {
-            $charge = \CoinbaseCommerce\Resources\Charge::retrieve($chargeId);
+            $charge = \PrivacyGate\Resources\Charge::retrieve($chargeId);
         } catch (\Exception $exception) {
             $this->failProcess($exception->getMessage());
         }
 
         if (!$charge) {
-            $this->failProcess('Charge was not found in Coinbase Commerce.');
+            $this->failProcess('Charge was not found in PrivacyGate.');
         }
 
         if ($charge->metadata[METADATA_SOURCE_PARAM] != METADATA_SOURCE_VALUE) {

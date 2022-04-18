@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/Coinbase/vendor/autoload.php';
-require_once __DIR__ . '/Coinbase/const.php';
+require_once __DIR__ . '/PrivacyGate/vendor/autoload.php';
+require_once __DIR__ . '/PrivacyGate/const.php';
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -8,17 +8,17 @@ if (!defined("WHMCS")) {
     die("This file cannot be accessed directly");
 }
 
-function coinbase_MetaData()
+function privacygate_MetaData()
 {
     return array(
-        'DisplayName' => 'Coinbase Commerce',
+        'DisplayName' => 'PrivacyGate',
         'APIVersion' => '1.1',
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => false
     );
 }
 
-function coinbase_config()
+function privacygate_config()
 {
     // Global variable required
     global $customadminpath;
@@ -30,9 +30,9 @@ function coinbase_config()
     $protocol = $isHttps ? "https://" : "http://";
     $url = $protocol . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
     $url = substr($url, 0, strpos($url, $customadminpath));
-    $callbackUrl = $url . "modules/gateways/callback/coinbase.php";
+    $callbackUrl = $url . "modules/gateways/callback/privacygate.php";
 
-    $webhookDescription = "<p>Please copy/paste <b>$callbackUrl</b> url in <a href=\"https://commerce.coinbase.com/dashboard/settings\" target=\"_blank\">Settings &gt; Webhook subscriptions &gt; Add an endpoint</a></p>";
+    $webhookDescription = "<p>Please copy/paste <b>$callbackUrl</b> url in <a href=\"https://dash.privacygate.io/settings\" target=\"_blank\">Settings &gt; Webhook subscriptions &gt; Add an endpoint</a></p>";
 
     if (!$isHttps) {
         $webhookDescription .= '<p style="color:red;">Please activate ssl for webhook notifications!!!</p>';
@@ -41,16 +41,16 @@ function coinbase_config()
     return array(
         'FriendlyName' => array(
             'Type' => 'System',
-            'Value' => 'Coinbase Commerce <a href=“https://commerce.coinbase.com/” target=“_blank” rel=“noopener”>(Learn more)</a>'
+            'Value' => 'PrivacyGate <a href=“https://dash.privacygate.io/” target=“_blank” rel=“noopener”>(Learn more)</a>'
         ),
         'apiKey' => array(
             'FriendlyName' => 'API Key',
-            'Description' => 'Get API Key <a href="https://commerce.coinbase.com/dashboard/settings" target="_blank">Settings &gt; API keys &gt; Create an API key</a>',
+            'Description' => 'Get API Key <a href="https://dash.privacygate.io/settings" target="_blank">Settings &gt; API keys &gt; Create an API key</a>',
             'Type' => 'text'
         ),
         'secretKey' => array(
             'FriendlyName' => 'Shared Secret',
-            'Description' => 'Get the Shared Key <a href="https://commerce.coinbase.com/dashboard/settings" target="_blank">Settings &gt; Show Shared Secrets</a>',
+            'Description' => 'Get the Shared Key <a href="https://dash.privacygate.io/settings" target="_blank">Settings &gt; Show Shared Secrets</a>',
             'Type' => 'text'
         ),
         'webhookUrl' => array(
@@ -70,7 +70,7 @@ function coinbase_config()
     );
 }
 
-function coinbase_link($params)
+function privacygate_link($params)
 {
     if (!isset($params) || empty($params)) {
         die('Missing or invalid $params data.');
@@ -107,8 +107,8 @@ function coinbase_link($params)
         'cancel_url' => $params['returnurl'] . "&paymentfailed=true"
     );
 
-    \CoinbaseCommerce\ApiClient::init($params['apiKey']);
-    $chargeObj = \CoinbaseCommerce\Resources\Charge::create($chargeData);
+    \PrivacyGate\ApiClient::init($params['apiKey']);
+    $chargeObj = \PrivacyGate\Resources\Charge::create($chargeData);
 
     $form = '<form action="' . $chargeObj->hosted_url . '" method="GET">';
     $form .= '<input type="submit" value="' . $params['langpaynow'] . '" />';
